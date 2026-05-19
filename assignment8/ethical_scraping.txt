@@ -1,0 +1,68 @@
+Assignment 8, Task 5 — Ethical Web Scraping
+Analysis of https://en.wikipedia.org/robots.txt
+================================================================
+
+1. Which sections of the website are restricted for crawling?
+
+For the wildcard user-agent (User-agent: *), Wikipedia disallows several
+families of URLs. The main ones are:
+
+  * /w/                  -- the MediaWiki backend (api endpoints, edit URLs,
+                           etc.). Allowed exceptions: a handful of read-only
+                           API endpoints (mobileview, load.php, the REST API
+                           doc, the sitemap endpoint).
+  * /api/                -- the REST API tree.
+  * /trap/               -- a honeypot directory used to catch misbehaving
+                           bots.
+  * /wiki/Special:       -- automatically generated "special" pages
+                           (Recent changes, What links here, Random page,
+                           Export, etc.).  Also disallowed in their
+                           translated forms: /wiki/Spezial: (German) and
+                           /wiki/Spesial: (Norwegian).
+  * Many community / process pages in various languages, e.g.:
+        /wiki/Wikipedia:Vandalismusmeldung/      (DE vandalism reports)
+        /wiki/Wikipedia:Löschkandidaten/         (DE deletion candidates)
+        /wiki/Wikipedia:Administratoren/Probleme/
+        /wiki/Wikipedia:Qualitätssicherung/
+        ...and many more in DE, FR, ES, JA, etc.
+  * Search and history-style URLs in non-English wikis are also blocked.
+
+2. Are there specific rules for certain user agents?
+
+Yes — Wikipedia singles out a long list of named bots. Two patterns appear:
+
+  * Hard bans (Disallow: /): bots that are considered abusive or
+    poorly-behaved get blocked from the entire site. Examples include
+    MJ12bot, Mediapartners-Google*, UbiCrawler, DOC, Zao,
+    sitecheck.internetseer.com, Zealbot, MSIECrawler, SiteSnagger,
+    WebStripper, WebCopier, Fetch, Offline Explorer, Teleport, TeleportPro,
+    WebZIP, linko, HTTrack, Microsoft.URL.Control, Xenu, larbin, libwww,
+    ZyBORG, Download Ninja, fast, wget, etc. Many of these are offline /
+    site-mirroring tools that would download huge swaths of the site.
+
+  * No restriction (Disallow: with empty value): a few bots (IsraBot,
+    Orthogaffe) are explicitly marked as allowed to crawl normally.
+
+The file also contains a prominent comment near the top:
+
+    # Please note: There are a lot of pages on this site, and there are
+    # some misbehaved spiders out there that go _way_ too fast. If you're
+    # irresponsible, your access to the site may be blocked.
+
+That comment is a polite warning that even allowed crawlers can be cut off if
+they hammer the site.
+
+3. Why do websites use robots.txt, and how does it promote ethical scraping?
+
+A robots.txt file is the site owner's published, public statement of which
+parts of the site they want crawled and by whom. It exists because servers
+have finite capacity: a single misbehaving scraper can saturate bandwidth,
+inflate hosting costs, and degrade the experience for human visitors.
+Honoring robots.txt promotes ethical scraping by keeping crawlers out of
+expensive or sensitive endpoints (search, edit URLs, automatically-generated
+pages, admin tooling), by signalling which automated user-agents the site
+considers abusive, and by establishing a shared norm that "you may visit
+this site programmatically, but only within these limits." It is advisory
+rather than enforced — the protocol relies on voluntary compliance — so
+ignoring it is a deliberate choice to override the operator's stated wishes,
+which is both rude and a fast way to get the scraper's IP blocked.
