@@ -1,0 +1,69 @@
+Assignment 8 — Challenges Encountered
+=====================================
+
+1. Figuring out the right outer selector for a search result.
+
+   My first guess for the wrapper element around one book entry was
+   li.cp-search-result-item-content, but when I actually opened Chrome
+   dev tools on the Durham Library search page, the wrapper turned out
+   to be <li class="row cp-search-result-item" data-test-id="searchResultItem">.
+   The class cp-search-result-item-content is real, but it's the INNER
+   content div inside the <li>, not the <li> itself. I switched the
+   script to use the data-test-id attribute selector
+   ('li[data-test-id="searchResultItem"]') because attribute names tend
+   to be more stable than CSS class names — BiblioCommons can rename a
+   class for styling reasons, but they're less likely to change a test
+   hook that QA tooling depends on.
+
+2. Inspecting a JavaScript-rendered page.
+
+   "View Source" didn't help here. The Durham Library catalog is a
+   React app — the raw HTML you get in View Source is mostly empty,
+   and the result <li>s only show up after React mounts. I had to use
+   the Elements tab in dev tools (which shows the live, post-render DOM)
+   to find the classes. This is also why driver.get() needs a short
+   time.sleep() before reading anything: the JS has to run first.
+
+3. Handling books with zero, one, or many authors.
+
+   Row 0 of the output had two authors ("Iris Acevedo A.;
+   Spanishonline, Costarica") and row 16 had two as well
+   ("Carmen García del Río; Fitzsimons, Ronan"). Rows 18 and 19
+   (Streaming Video entries) had no author listed at all. I used
+   find_elements (plural) to get back a list of <a> elements, joined
+   any non-empty names with "; ", and accepted an empty string for
+   the no-author case. Using find_element (singular) would have
+   crashed on the no-author rows.
+
+4. Making the inner selectors resilient to small markup changes.
+
+   Rather than committing to one CSS class per field, I gave each
+   field a short list of candidate selectors and took the first one
+   that returned non-empty text. That way, if BiblioCommons renamed
+   span.title-content tomorrow, the script could still work if any
+   of the fallback selectors matched. I also added a diagnostic
+   block: if the script can't find a title in the first result, it
+   prints that <li>'s innerHTML and exits so I can see the actual
+   structure instead of getting silent empty strings.
+
+5. OWASP — the landing page doesn't hold the list anymore.
+
+   The assignment names https://owasp.org/www-project-top-ten/ as the
+   page to scrape, but the actual numbered Top 10 list now lives at
+   /Top10/2025/ — the landing page just links over to it. I pointed
+   the URL at /Top10/2025/ directly. The XPath I used is still the
+   robust pattern from section 8.4: find any heading whose text
+   starts with "Top 10", then jump to the next following-sibling <ol>,
+   then pull every <li>/<a> inside it. Because the heading and the
+   <ol> have no useful class or id, this is exactly the case the
+   lesson warned about where pure CSS selectors won't work and
+   XPath axes are needed.
+
+6. macOS / LibreSSL warning.
+
+   Every time the script ran, it printed a NotOpenSSLWarning about
+   urllib3 v2 only supporting OpenSSL 1.1.1+ while the system Python
+   is built against LibreSSL 2.8.3. This is a macOS quirk (the system
+   Python is linked against the old LibreSSL) and has nothing to do
+   with the scraping code — the script ran fine. Left it alone since
+   fixing it would mean reinstalling Python.
