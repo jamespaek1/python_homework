@@ -1,0 +1,5 @@
+Mindset Assignment: Willingness To Experiment
+
+One example of something I failed at multiple times before improving was learning coding and technical problem-solving. At first, error messages and stack traces felt frustrating because I did not always understand what the computer was telling me. I stayed motivated by slowing down, testing one small part at a time, and treating each error as a clue instead of proof that I was not good at coding. When I finally fixed a problem, it helped me see that progress usually comes from repeated attempts, not from getting everything right the first time.
+
+I have also seen other people learn from failure and eventually succeed. For example, students I tutor often struggle with a math concept at first, but they improve when they review their mistakes, ask questions, and practice similar problems step by step. The students who improve the most are usually the ones who do not hide their confusion. They are willing to try, check their work, correct their mistakes, and try again. That same strategy applies to coding: experiment, read the feedback carefully, make one change, and test again.
